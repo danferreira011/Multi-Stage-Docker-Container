@@ -40,6 +40,24 @@ CMD ["./main"]
 - ✅ Menor superfície de ataque (apenas Alpine Linux)
 - ✅ Mais rápido para deploy
 
+### Dockerfile.alpine - Single-Stage Otimizado
+
+O `Dockerfile.alpine` é uma versão **single-stage** que utiliza a base Alpine Linux, oferecendo um bom equilíbrio entre simplicidade e tamanho:
+
+```dockerfile
+FROM golang:tip-alpine3.23
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+CMD [ "./main" ]
+```
+
+**Características:**
+- ✅ Mais simples que multi-stage (apenas um estágio)
+- ✅ Imagem compacta (~150MB)
+- ✅ Melhor que o Dockerfile simples, mas maior que o multi-stage
+- ⚠️ Inclui ferramentas de build (menos seguro que multi-stage)
+
 ### Dockerfile.simples - Alternativa
 
 O `Dockerfile.simples` é uma versão single-stage mais simples, mas produz uma imagem muito maior.
@@ -56,7 +74,17 @@ docker build -t app-multi-stage:latest .
 docker run -d -p 8080:8080 app-multi-stage:latest
 ```
 
-### Opção 2: Com o Dockerfile Simples
+### Opção 2: Com o Dockerfile Alpine (Single-Stage)
+
+```bash
+# Construir a imagem
+docker build -f Dockerfile.alpine -t app-alpine:latest .
+
+# Rodar o container
+docker run -d -p 8080:8080 app-alpine:latest
+```
+
+### Opção 3: Com o Dockerfile Simples
 
 ```bash
 # Construir a imagem
@@ -87,10 +115,11 @@ Você deve ver a resposta:
 
 | Dockerfile | Tamanho da Imagem |
 |-----------|-------------------|
-| Multi-Stage (Alpine) | ~15 MB |
+| Multi-Stage | ~15 MB |
+| Alpine | ~150 MB |
 | Simples (Golang) | ~900 MB |
 
-**Economia: 98% de espaço!**
+**Recomendação:** Use `Dockerfile` (multi-stage) para produção! 🚀
 
 ## 🛠️ Outros Comandos Úteis
 

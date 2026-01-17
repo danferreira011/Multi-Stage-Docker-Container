@@ -7,5 +7,5 @@ FROM alpine:3.23.2 AS app
 WORKDIR /app
 RUN apk add --no-cache ca-certificates
 COPY --from=build /build/main .
-EXPOSE 8080
+#EXPOSE 8080
 CMD ["./main"]
